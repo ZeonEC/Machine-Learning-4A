@@ -6,7 +6,6 @@ Programme de regression linéaire simple en Python
 # Auteur: Enzo C
 
 import os
-from tkinter import Y 
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -77,7 +76,48 @@ def ComputeSimpleLinRegresCoefGradientDescent(x, y, learning_rate=0.01, max_iter
         print("Coefficients (a0, a1) avec Gradient Descent :\n", a0, a1)
     return da0, da1
 
-#def ComputeSimpleLinRegresCoefStochasticGradientDescentMatrix(x, y, learning_rate=0.01, max_iterations=1000, tolerance = 1e-6):
+def ComputeSimpleLinRegresCoefGradientDescentMatrix(x, y, coefficients, learning_rate=0.01, max_iterations=1000, tolerance = 1e-6):
+    n = len(x)
+    
+    # np.vstack((np.ones(n),x)).T permet de créer une matrice X avec une colonne de 
+    # 1 pour l'ordonnée à l'origine et une colonne de x pour la pente
+    # np.vstack emplie des lignes en fonction de list 
+    X = np.vstack((np.ones(n),x)).T
+    print("Matrice X :\n", X)
+
+    # reshape(-1, 1) permet de transformer le vecteur y en une matrice colonne
+    # -1 indique que le nombre de lignes est automatiquement déterminé en fonction du nombre de colonnes (1 dans ce cas)
+    # 1  indique que la matrice doit avoir une seule colonne
+    Y = y.reshape(-1, 1)
+    print("Matrice Y :\n", Y)
+
+    print("Coefficients initiaux (a0, a1) :\n", coefficients.flatten().T)
+
+    #initialisation des coefficients
+    new_coefficients = coefficients
+
+    Loss_tab = []
+    #boucle de gradient descent
+    for iteration in range(max_iterations):
+        
+        new_coefficients = new_coefficients - (learning_rate * (X.T@(X@new_coefficients - Y))) / n
+        error = X @ new_coefficients - Y
+        Loss_Function = (1 / (2 * n)) * np.sum(error ** 2)
+
+        Loss_tab.append(Loss_Function)
+        if iteration > 0 and abs(Loss_tab[iteration-1] - Loss_tab[iteration]) <= tolerance:
+            #print("Loss_tab : ", Loss_tab)
+            print(f"Convergence atteinte après {iteration} itérations.")
+            break
+    
+    plt.figure()
+    plt.plot(Loss_tab)
+    plt.title("Loss Function")
+    plt.xlabel("Iteration")
+    plt.ylabel("Loss")
+    plt.grid(True)
+    plt.show()
+    return
 
 def main():
 
@@ -110,6 +150,14 @@ def main():
     plt.show()
 
     a0, a1 = ComputeSimpleLinRegresCoefGradientDescent(x, y)
+
+
+    # Initialisation des coefficients
+    # 2 correspond à a0 et a1, 1 correspond à une matrice colonne
+    starting_coefficients = np.zeros((2, 1))  # (a0, a1)
+    ComputeSimpleLinRegresCoefGradientDescentMatrix(x, y, starting_coefficients)
+
+
     
     
 
