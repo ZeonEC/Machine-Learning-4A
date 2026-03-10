@@ -32,10 +32,23 @@ def ComputeSimpleLinRegresCoefAnalytical(x, y):
 # on cherche a0 et a1 de la forme (a1, a0) = (X^T * X)^(-1) * X^T * Y)
 def ComputeSimpleLinRegresCoefMatrix(x, y):
     n = len(x)
-    X = np.vstack((x, np.ones(n))).T
+    
+    # np.vstack((np.ones(n),x)).T permet de créer une matrice X avec une colonne de 
+    # 1 pour l'ordonnée à l'origine et une colonne de x pour la pente
+    # np.vstack emplie des lignes en fonction de list 
+    X = np.vstack((np.ones(n),x)).T
+    print("Matrice X :\n", X)
+
+    # reshape(-1, 1) permet de transformer le vecteur y en une matrice colonne
+    # -1 indique que le nombre de lignes est automatiquement déterminé en fonction du nombre de colonnes (1 dans ce cas)
+    # 1  indique que la matrice doit avoir une seule colonne
     Y = y.reshape(-1, 1)
+    print("Matrice Y :\n", Y)
+
     # Calcul des coefficients a1 et a0
     coefficients = np.linalg.inv(X.T @ X) @ X.T @ Y
+    print("Coefficients (a1, a0) :\n", coefficients)
+
     a1, a0 = coefficients.flatten()
     return a1, a0
 
@@ -47,10 +60,12 @@ def main():
     #recuperer les valeurs de x et y
     x = df["x0"].to_numpy()
     y = df["y"].to_numpy()
-    print(x)
-    #print(y)
+    
+    # calculer les coefficients de la regression linéaire simple
+    a1, a0 = ComputeSimpleLinRegresCoefAnalytical(x, y)
 
-    #a1, a0 = ComputeSimpleLinRegresCoefAnalytical(x,y)
+    # Calculer les coefficients de la regression linéaire simple avec la méthode matricielle
+    a1, a0 = ComputeSimpleLinRegresCoefMatrix(x, y)
     
 
 if __name__ == "__main__":
