@@ -76,7 +76,7 @@ def ComputeSimpleLinRegresCoefGradientDescent(x, y, learning_rate=0.01, max_iter
         print("Coefficients (a0, a1) avec Gradient Descent :\n", a0, a1)
     return da0, da1
 
-def ComputeSimpleLinRegresCoefGradientDescentMatrix(x, y, coefficients, learning_rate=0.01, max_iterations=1000, tolerance = 1e-6):
+def ComputeSimpleLinRegresCoefGradientDescentMatrix(x, y, coefficients, learning_rate=0.08, max_iterations=1000, tolerance = 1e-6):
     n = len(x)
     
     # np.vstack((np.ones(n),x)).T permet de créer une matrice X avec une colonne de 
@@ -119,6 +119,20 @@ def ComputeSimpleLinRegresCoefGradientDescentMatrix(x, y, coefficients, learning
     plt.show()
     return
 
+
+def ComputeNDisplayErrors(x, y, y_pred):
+    error = y - y_pred
+    mse = (np.sum(error ** 2))/len(x)
+    print("Mean Squared Error : ", mse)
+
+    rmse = np.sqrt(mse)
+    print("Root Mean Squared Error : ", rmse)
+
+    r2 = np.sum(error ** 2) / np.sum((y - np.mean(y)) ** 2)
+    print("R² : ", 1 - r2)
+
+    return
+
 def main():
 
     #Lire un fichier 
@@ -130,9 +144,11 @@ def main():
     
     # calculer les coefficients de la regression linéaire simple
     a0, a1 = ComputeSimpleLinRegresCoefAnalytical(x, y)
+    ComputeNDisplayErrors(x, y, predict(a1, a0, x))
 
     # Calculer les coefficients de la regression linéaire simple avec la méthode matricielle
     a0, a1 = ComputeSimpleLinRegresCoefMatrix(x, y)
+    ComputeNDisplayErrors(x, y, predict(a1, a0, x))
 
     # marker = "+" pour des points en +
     # "ob" pour des points en o de couleur bleue
@@ -156,6 +172,7 @@ def main():
     # 2 correspond à a0 et a1, 1 correspond à une matrice colonne
     starting_coefficients = np.zeros((2, 1))  # (a0, a1)
     ComputeSimpleLinRegresCoefGradientDescentMatrix(x, y, starting_coefficients)
+    ComputeNDisplayErrors(x, y, predict(a1, a0, x))
 
 
     
